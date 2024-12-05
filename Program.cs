@@ -58,6 +58,22 @@ app.MapGet("/api/customers", async (HillaryHairCareDbContext db) =>
     return Results.Ok(customers);
 });
 
+// Endpoint to get all services
+app.MapGet("/api/services", async (HillaryHairCareDbContext db) =>
+{
+    var services = await db.Services
+        .Select(srs => new
+        {
+            srs.Id,
+            srs.Name,
+            srs.Description,
+            srs.Price
+        })
+        .ToListAsync();
+    
+    return Results.Ok(services);
+});
+
 // Endpoint to get all stylists
 app.MapGet("/api/stylists", async (HillaryHairCareDbContext db) =>
 {
@@ -73,6 +89,60 @@ app.MapGet("/api/stylists", async (HillaryHairCareDbContext db) =>
     
     return Results.Ok(stylists);
 });
+
+app.MapPost("/api/appointments", async (CreateAppointmentDTO appointmentDTO, HillaryHairCareDbContext dbContext) =>
+{
+    try
+    {
+        // Validate the input
+        if (appointmentDTO.ServiceIds == null || !appointmentDTO.ServiceIds.Any())
+        {
+            return Results.BadRequest("At least one service must be selected.");
+        }
+
+        // Create the Appointment entity
+        var appointment = new Appointment
+        {
+            CustomerId = appointmentDTO.CustomerId,
+            StylistId = appointmentDTO.StylistId,
+            AppointmentTime = appointmentDTO.AppointmentTime,
+            Status = "Scheduled"
+        };
+
+        dbContext.Appointments.Add(appointment);
+        await dbContext.SaveChangesAsync();
+
+        // Add related AppointmentServices
+        foreach (var serviceId in appointmentDTO.ServiceIds)
+        {
+            var appointmentService = new AppointmentService
+            {
+                AppointmentId = appointment.Id,
+                ServiceId = serviceId
+            };
+            dbContext.AppointmentServices.Add(appointmentService);
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        // Return a simplified response
+        return Results.Created($"/api/appointments/{appointment.Id}", new
+        {
+            appointment.Id,
+            appointment.CustomerId,
+            appointment.StylistId,
+            appointment.AppointmentTime,
+            appointment.Status
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error occurred: {ex.Message}");
+        return Results.Problem("An unexpected error occurred while processing the appointment.");
+    }
+});
+
+
 
 app.Run();
 

@@ -11,7 +11,7 @@ export const StylistList = () => {
 
   return (
     <div className="container">
-      <h4>Customers</h4>
+      <h4>Stylists</h4>
       <Table>
         <thead>
           <tr>
