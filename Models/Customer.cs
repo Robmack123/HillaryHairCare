@@ -9,5 +9,6 @@ namespace HillaryHairCare.Models
         public string Name { get; set; }
         [Required]
         public string Email { get; set; }
+        public Appointment Appointments { get; set; }   
     }
 }
