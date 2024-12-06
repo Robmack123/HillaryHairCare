@@ -16,3 +16,28 @@ export const createCustomer = (customer) => {
     return res.json();
   });
 };
+
+export const getCustomerById = (id) => {
+  return fetch(`${_apiUrl}/${id}`).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to fetch customer details");
+    }
+    return res.json();
+  });
+};
+
+// Update a customer
+export const updateCustomer = (id, customer) => {
+  return fetch(`${_apiUrl}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(customer),
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to update customer");
+    }
+    return res.json();
+  });
+};
