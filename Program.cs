@@ -271,6 +271,21 @@ app.MapGet("/api/customers/{id}", async (int id, HillaryHairCareDbContext dbCont
     return Results.Ok(customer);
 });
 
+//Deactivate Stylist
+app.MapPut("/api/stylists/{id}/deactivate", async (int id, DeactivateStylistDTO dto, HillaryHairCareDbContext dbContext) =>
+{
+    var stylist = await dbContext.Stylists.FindAsync(id);
 
+    stylist.Is_Active = dto.IsActive;
+    await dbContext.SaveChangesAsync();
+
+    return Results.Ok(new
+    {
+        Message = "Stylist status updated successfully.",
+        StylistId = stylist.Id,
+        stylist.Name,
+        IsActive = stylist.Is_Active
+    });
+});
 app.Run();
 
