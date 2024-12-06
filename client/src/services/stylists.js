@@ -16,3 +16,12 @@ export const toggleStylistStatus = (stylistId, isActive) => {
     return res.json();
   });
 };
+
+export const getStylistAppointments = (stylistId) => {
+  return fetch(`${_apiUrl}/${stylistId}/appointments`).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to fetch stylist appointments");
+    }
+    return res.json();
+  });
+};

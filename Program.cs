@@ -287,5 +287,35 @@ app.MapPut("/api/stylists/{id}/deactivate", async (int id, DeactivateStylistDTO 
         IsActive = stylist.Is_Active
     });
 });
+
+app.MapGet("/api/stylists/{id}/appointments", async (int id, HillaryHairCareDbContext dbContext) =>
+{
+    var stylistAppointments = await dbContext.Appointments
+        .Where(a => a.StylistId == id)
+        .Include(a => a.Customer)
+        .Include(a => a.AppointmentServices)
+            .ThenInclude(asr => asr.Service)
+        .Select(a => new
+        {
+            AppointmentId = a.Id,
+            CustomerName = a.Customer.Name,
+            a.AppointmentTime,
+            a.Status,
+            Services = a.AppointmentServices.Select(asr => new
+            {
+                ServiceName = asr.Service.Name,
+                ServicePrice = asr.Service.Price
+            }),
+            TotalCost = a.AppointmentServices.Sum(asr => asr.Service.Price)
+        })
+        .ToListAsync();
+
+        if (!stylistAppointments.Any())
+    {
+        return Results.NotFound($"No appointments found for stylist with ID {id}.");
+    }
+
+    return Results.Ok(stylistAppointments);
+});
 app.Run();
 
