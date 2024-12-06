@@ -171,6 +171,56 @@ app.MapPut("/api/appointments/{id}/cancel", async (int id, HillaryHairCareDbCont
     }
 });
 
+app.MapPut("/api/appointments/{id}/services", async (int id, List<int> newServiceIds, HillaryHairCareDbContext dbContext) =>
+{
+    try
+    {
+        // Find the appointment
+        var appointment = await dbContext.Appointments
+            .Include(a => a.AppointmentServices)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (appointment == null)
+        {
+            return Results.NotFound($"Appointment with ID {id} not found.");
+        }
+
+        // Remove all existing services for this appointment
+        dbContext.AppointmentServices.RemoveRange(appointment.AppointmentServices);
+
+        // Add the new services
+        foreach (var serviceId in newServiceIds)
+        {
+            if (!await dbContext.Services.AnyAsync(s => s.Id == serviceId))
+            {
+                return Results.BadRequest($"Service with ID {serviceId} does not exist.");
+            }
+
+            dbContext.AppointmentServices.Add(new AppointmentService
+            {
+                AppointmentId = id,
+                ServiceId = serviceId
+            });
+        }
+
+        // Save changes
+        await dbContext.SaveChangesAsync();
+
+        return Results.Ok(new
+        {
+            Message = "Services updated successfully.",
+            AppointmentId = id,
+            NewServiceIds = newServiceIds
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+        return Results.Problem("An unexpected error occurred while updating the services.");
+    }
+});
+
+
 
 app.Run();
 

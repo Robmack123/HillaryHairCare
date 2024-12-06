@@ -29,3 +29,18 @@ export const cancelAppointment = (appointmentId) => {
     return res.json();
   });
 };
+
+export const updateAppointmentServices = (appointmentId, serviceIds) => {
+  return fetch(`${_apiUrl}/${appointmentId}/services`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(serviceIds),
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to update appointment services");
+    }
+    return res.json();
+  });
+};

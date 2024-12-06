@@ -74,10 +74,10 @@ export const AppointmentList = () => {
               <td>{appointment.status}</td>
               <td>
                 <Link
-                  to={`/appointments/${appointment.id}`}
-                  className="btn btn-primary btn-sm"
+                  to={`/appointments/${appointment.id}/services`}
+                  className="btn btn-secondary btn-sm"
                 >
-                  Edit
+                  Edit Services
                 </Link>{" "}
                 <Button
                   color="danger"
