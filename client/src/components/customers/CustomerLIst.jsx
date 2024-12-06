@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCustomers } from "../../services/customers";
 import { Table } from "reactstrap";
+import { Link } from "react-router-dom";
 
 export const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -11,7 +12,12 @@ export const CustomerList = () => {
 
   return (
     <div className="container">
-      <h4>Customers</h4>
+      <div className="sub-menu bg-light">
+        <h4>Customers</h4>
+        <Link to="/customers/add" className="btn btn-primary">
+          Add Customers
+        </Link>
+      </div>
       <Table>
         <thead>
           <tr>

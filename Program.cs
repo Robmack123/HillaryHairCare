@@ -220,6 +220,26 @@ app.MapPut("/api/appointments/{id}/services", async (int id, List<int> newServic
     }
 });
 
+//Add a new customer
+
+app.MapPost("/api/customers", async (CreateCustomerDTO newCustomerDTO, HillaryHairCareDbContext dbContext) =>
+{
+    if (string.IsNullOrWhiteSpace(newCustomerDTO.Name) || string.IsNullOrWhiteSpace(newCustomerDTO.Email))
+    {
+        return Results.NotFound("Customer name and email are required");
+    }
+
+    var newCustomer = new Customer
+    {
+        Name = newCustomerDTO.Name,
+        Email = newCustomerDTO.Email
+    };
+
+    dbContext.Customers.Add(newCustomer);
+    await dbContext.SaveChangesAsync();
+
+    return Results.Created($"/api/customers/{newCustomer.Id}", newCustomer);
+});
 
 
 app.Run();

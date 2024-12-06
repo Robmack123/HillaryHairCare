@@ -8,6 +8,7 @@ import { StylistList } from "./components/stylists/StylistList";
 import { HairServicesList } from "./components/hairServices/HairServicesList";
 import { ScheduleAppointment } from "./components/appointments/ScheduleAppointment";
 import { EditAppointmentServices } from "./components/appointments/EditAppointment";
+import { AddCustomer } from "./components/customers/AddCustomer.Jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -23,6 +24,7 @@ root.render(
           path="appointments/:id/services"
           element={<EditAppointmentServices />}
         />
+        <Route path="customers/add" element={<AddCustomer />} />
       </Route>
     </Routes>
   </BrowserRouter>
