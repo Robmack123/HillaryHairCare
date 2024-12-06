@@ -1,17 +1,37 @@
 import { useEffect, useState } from "react";
-import { getAppointments } from "../../services/appointments";
+import {
+  getAppointments,
+  cancelAppointment,
+} from "../../services/appointments";
 import { Link } from "react-router-dom";
-import { Table } from "reactstrap";
+import { Table, Button } from "reactstrap";
 
 export const AppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = () => {
     getAppointments().then((data) => {
-      console.log(data);
       setAppointments(data);
     });
-  }, []);
+  };
+
+  const handleCancel = (appointmentId) => {
+    if (window.confirm("Are you sure you want to cancel this appointment?")) {
+      cancelAppointment(appointmentId)
+        .then(() => {
+          alert("Appointment canceled successfully");
+          fetchAppointments(); // Refresh the list after cancellation
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Failed to cancel appointment");
+        });
+    }
+  };
 
   return (
     <div className="container">
@@ -27,7 +47,8 @@ export const AppointmentList = () => {
             <th>Client</th>
             <th>Service</th>
             <th>Stylist</th>
-            <th></th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -52,7 +73,20 @@ export const AppointmentList = () => {
               <td>{appointment.stylistName}</td>
               <td>{appointment.status}</td>
               <td>
-                <Link to={`/appointments/${appointment.id}`}>Edit</Link>
+                <Link
+                  to={`/appointments/${appointment.id}`}
+                  className="btn btn-primary btn-sm"
+                >
+                  Edit
+                </Link>{" "}
+                <Button
+                  color="danger"
+                  size="sm"
+                  onClick={() => handleCancel(appointment.id)}
+                  disabled={appointment.status === "Canceled"}
+                >
+                  Cancel
+                </Button>
               </td>
             </tr>
           ))}

@@ -142,6 +142,34 @@ app.MapPost("/api/appointments", async (CreateAppointmentDTO appointmentDTO, Hil
     }
 });
 
+app.MapPut("/api/appointments/{id}/cancel", async (int id, HillaryHairCareDbContext dbContext) =>
+{
+    try
+    {
+        var appointment = await dbContext.Appointments.FindAsync(id);
+
+        if (appointment == null)
+        {
+            return Results.NotFound($"Appointment with ID {id} not found.");
+        }
+
+        appointment.Status = "Canceled";
+
+        await dbContext.SaveChangesAsync();
+
+        return Results.Ok(new
+        {
+            Message = "Appointment canceled successfully.",
+            AppointmentId = appointment.Id,
+            Status = appointment.Status
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+        return Results.Problem("An unexpected error occurred while canceling the appointment.");
+    }
+});
 
 
 app.Run();
