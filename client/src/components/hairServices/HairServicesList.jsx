@@ -24,6 +24,7 @@ export const HairServicesList = () => {
             <th>Name</th>
             <th>Description</th>
             <th>Price</th>
+            <th>Actions</th> {/* New column for actions */}
           </tr>
         </thead>
         <tbody>
@@ -31,7 +32,15 @@ export const HairServicesList = () => {
             <tr key={service.id}>
               <td>{service.name}</td>
               <td>{service.description}</td>
-              <td>${service.price}</td>
+              <td>${service.price.toFixed(2)}</td>
+              <td>
+                <Link
+                  to={`/services/${service.id}/edit`}
+                  className="btn btn-secondary btn-sm"
+                >
+                  Edit
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>

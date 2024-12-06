@@ -1,4 +1,5 @@
 using HillaryHairCare.Models;
+using HillaryHairCare.Models.DTOs;
 using HillaryHairCare.Modles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -271,6 +272,18 @@ app.MapGet("/api/customers/{id}", async (int id, HillaryHairCareDbContext dbCont
     return Results.Ok(customer);
 });
 
+app.MapGet("/api/services/{id}", async (int id, HillaryHairCareDbContext dbContext) =>
+{
+    var service = await dbContext.Services.FindAsync(id);
+
+    if (service == null)
+    {
+        return Results.NotFound($"Service with ID {id} not found");
+    }
+
+    return Results.Ok(service);
+});
+
 //Deactivate Stylist
 app.MapPut("/api/stylists/{id}/deactivate", async (int id, DeactivateStylistDTO dto, HillaryHairCareDbContext dbContext) =>
 {
@@ -336,6 +349,23 @@ app.MapPost("/api/services", async (CreateServiceDTO newServiceDTO, HillaryHairC
     await dbContext.SaveChangesAsync();
 
     return Results.Created($"/api/services/{newService.Id}", newService);
+});
+
+app.MapPut("/api/services/{id}", async (int id, UpdateServiceDTO updatedService, HillaryHairCareDbContext dbContext) =>
+{
+    var service = await dbContext.Services.FindAsync(id);
+    if (service == null)
+    {
+        return Results.NotFound($"Service with ID {id} not found");
+    }
+
+    service.Name = updatedService.Name;
+    service.Description = updatedService.Description;
+    service.Price = updatedService.Price;
+
+    await dbContext.SaveChangesAsync();
+
+    return Results.Ok(service);
 });
 app.Run();
 
