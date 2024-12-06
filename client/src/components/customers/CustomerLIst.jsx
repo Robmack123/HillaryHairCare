@@ -15,7 +15,7 @@ export const CustomerList = () => {
       <div className="sub-menu bg-light">
         <h4>Customers</h4>
         <Link to="/customers/add" className="btn btn-primary">
-          Add Customers
+          Add Customer
         </Link>
       </div>
       <Table>
@@ -23,6 +23,7 @@ export const CustomerList = () => {
           <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +31,14 @@ export const CustomerList = () => {
             <tr key={customer.id}>
               <td>{customer.name}</td>
               <td>{customer.email}</td>
+              <td>
+                <Link
+                  to={`/customers/${customer.id}/edit`}
+                  className="btn btn-secondary btn-sm"
+                >
+                  Edit
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>

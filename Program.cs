@@ -1,4 +1,5 @@
 using HillaryHairCare.Models;
+using HillaryHairCare.Modles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
@@ -239,6 +240,35 @@ app.MapPost("/api/customers", async (CreateCustomerDTO newCustomerDTO, HillaryHa
     await dbContext.SaveChangesAsync();
 
     return Results.Created($"/api/customers/{newCustomer.Id}", newCustomer);
+});
+
+//Edit customer details
+app.MapPut("/api/customers/{id}", async (int id, UpdateCustomerDTO updatedCustomer, HillaryHairCareDbContext dbContext) =>
+{
+    var customer = await dbContext.Customers.FindAsync(id);
+    if (customer == null)
+    {
+        return Results.NotFound($"Customer with ID {id} not found");
+    }
+
+    customer.Name = updatedCustomer.Name;
+    customer.Email = updatedCustomer.Email;
+
+    await dbContext.SaveChangesAsync();
+
+    return Results.Ok(customer);
+});
+
+app.MapGet("/api/customers/{id}", async (int id, HillaryHairCareDbContext dbContext) =>
+{
+    var customer = await dbContext.Customers.FindAsync(id);
+
+    if (customer == null)
+    {
+        return Results.NotFound($"Customer with ID {id} not found");
+    }
+
+    return Results.Ok(customer);
 });
 
 
