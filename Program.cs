@@ -317,5 +317,25 @@ app.MapGet("/api/stylists/{id}/appointments", async (int id, HillaryHairCareDbCo
 
     return Results.Ok(stylistAppointments);
 });
+
+app.MapPost("/api/services", async (CreateServiceDTO newServiceDTO, HillaryHairCareDbContext dbContext) =>
+{
+    if (string.IsNullOrWhiteSpace(newServiceDTO.Name) || string.IsNullOrWhiteSpace(newServiceDTO.Description) || newServiceDTO.Price <= 0)
+    {
+        return Results.BadRequest("Service name, description, and a valid price are required");
+    }
+
+    var newService = new Service
+    {
+        Name = newServiceDTO.Name,
+        Description = newServiceDTO.Description,
+        Price = newServiceDTO.Price
+    };
+
+    dbContext.Services.Add(newService);
+    await dbContext.SaveChangesAsync();
+
+    return Results.Created($"/api/services/{newService.Id}", newService);
+});
 app.Run();
 
