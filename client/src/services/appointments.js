@@ -17,3 +17,15 @@ export const createAppointment = (appointment) => {
     return res.json();
   });
 };
+
+export const cancelAppointment = (appointmentId) => {
+  return fetch(`${_apiUrl}/${appointmentId}/cancel`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to cancel appointment");
+    }
+    return res.json();
+  });
+};
